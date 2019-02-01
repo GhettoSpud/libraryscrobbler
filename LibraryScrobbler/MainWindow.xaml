@@ -1,0 +1,30 @@
+﻿<Window x:Class="GraphicScrobbler.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:GraphicScrobbler"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="200" Width="400">
+    <Grid>
+        <Grid.RowDefinitions >
+            <RowDefinition />
+            <RowDefinition />
+            <RowDefinition />
+        </Grid.RowDefinitions>
+        <StackPanel Grid.Row="0" Orientation="Horizontal">
+            <Button Height="25" Margin="5" Click="DirectoryButtonClicked" Content="Browse"/>
+            <TextBlock Height="20" Margin="5" Text="Root Directory:"/>
+            <TextBlock Name="directoryTextBox" Text="{Binding Path=RootDirectory}" Height="20" Margin="5"/>
+        </StackPanel>
+        <StackPanel Grid.Row="1" Orientation="Horizontal">
+            <TextBlock Height="20" Margin="5" Text="Overwrite Existing Metadata Files"/>
+            <CheckBox Name="ShouldOverwrite" Margin="5" VerticalAlignment="Center"/>
+        </StackPanel>
+        <StackPanel Grid.Row="2" Orientation="Horizontal">
+            <Button Name="ParseButton" Height="25" Margin="5" Click="ParseButtonClicked" Content="Begin Parsing"/>
+            <TextBlock Height="20" Text="Current Directory:"/>
+            <TextBlock Height="20" Text="{Binding Path=CurrentDirectory}" Margin="5"/>
+        </StackPanel>
+    </Grid>
+</Window>

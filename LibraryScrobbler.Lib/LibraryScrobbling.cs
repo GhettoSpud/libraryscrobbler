@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 using System.Web;
 using System.Net.Http;
 
-namespace GraphicScrobbler.Lib
+namespace LibraryScrobbler.Lib
 {
     public static class LibraryScrobbling
     {

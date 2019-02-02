@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System;
 using System.Text.RegularExpressions;
 
-namespace GraphicScrobbler.Lib
+namespace LibraryScrobbler.Lib
 {
     public static class LibraryParsing
     {

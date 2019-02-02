@@ -1,4 +1,4 @@
-﻿using GraphicScrobbler.Lib;
+﻿using LibraryScrobbler.Lib;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -18,7 +18,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Windows.Threading;
 
-namespace GraphicScrobbler
+namespace LibraryScrobbler
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml

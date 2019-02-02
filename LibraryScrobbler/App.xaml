@@ -1,7 +1,6 @@
-﻿<Application x:Class="GraphicScrobbler.App"
+﻿<Application x:Class="LibraryScrobbler.App"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:local="clr-namespace:GraphicScrobbler"
              StartupUri="MainWindow.xaml">
     <Application.Resources>
          

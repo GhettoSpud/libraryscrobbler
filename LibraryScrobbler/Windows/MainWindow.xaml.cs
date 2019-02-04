@@ -27,27 +27,41 @@ namespace LibraryScrobbler
     {
         #region Properties
 
-        private string _rootDirectory;
-        public string RootDirectory
+        private string _rootDirectoryPath;
+        public string InputRootDirectoryPath
         {
-            get { return _rootDirectory; }
+            get { return _rootDirectoryPath; }
             set
             {
-                _rootDirectory = value;
-                RaisePropertyChanged("RootDirectory");
+                _rootDirectoryPath = value;
+                RaisePropertyChanged("InputRootDirectoryPath");
             }
         }
 
-        private string _currentDirectory;
-        public string CurrentDirectory
+        private string _currentDirectoryPath;
+        public string CurrentDirectoryPath
         {
-            get { return _currentDirectory; }
+            get { return _currentDirectoryPath; }
             set
             {
-                _currentDirectory = value;
-                RaisePropertyChanged("CurrentDirectory");
+                _currentDirectoryPath = value;
+                RaisePropertyChanged("CurrentDirectoryPath");
             }
         }
+
+        private string _outputDirectoryPath;
+        public string OutputRootDirectoryPath
+        {
+            get { return _outputDirectoryPath; }
+            set
+            {
+                _outputDirectoryPath = value;
+                RaisePropertyChanged("OutputRootDirectoryPath");
+            }
+        }
+
+        private string SqliteFilepath { get { return $"{OutputRootDirectoryPath}\\Sqlite\\music_metadata.sqlite"; } }
+        private string SqliteConnectionString { get { return $"DataSource={SqliteFilepath};"; } }
 
         private void RaisePropertyChanged(string propName)
         {
@@ -63,41 +77,51 @@ namespace LibraryScrobbler
             DataContext = this;
         }
 
-        public void DirectoryButtonClicked(object sender, RoutedEventArgs args)
+        public void InputDirectoryButtonClicked(object sender, RoutedEventArgs args)
         {
             var folderPicker = new System.Windows.Forms.FolderBrowserDialog();
             var result = folderPicker.ShowDialog();
-            RootDirectory = folderPicker.SelectedPath;
+            InputRootDirectoryPath = folderPicker.SelectedPath;
         }
 
         public void ParseButtonClicked(object sender, RoutedEventArgs args)
         {
-            var directory = new DirectoryInfo(RootDirectory);
-            var outputDirectory = new DirectoryInfo(directory.FullName + "\\Metadata");
+            var directory = new DirectoryInfo(InputRootDirectoryPath);
+            var outputDirectory = new DirectoryInfo(OutputRootDirectoryPath);
             var shouldOverwrite = ShouldOverwrite.IsChecked ?? false;
 
             Task.Factory.StartNew(() =>
             {
-                ParseMetadataRecursive(directory, outputDirectory, shouldOverwrite);
-                CurrentDirectory = "Finished!";
+                if (shouldOverwrite)
+                {
+                    LibraryParsing.CreateDatabase(SqliteFilepath);
+                }
+
+                ParseMetadataRecursive(directory, outputDirectory, "", shouldOverwrite);
+                CurrentDirectoryPath = "Finished!";
             });
         }
 
         public void ParseMetadataRecursive(
             DirectoryInfo rootDirectory,
             DirectoryInfo rootOutputDirectory,
+            string subDirectorySuffix,
             bool shouldOverwrite)
         {
-            //var currentOutputDirectory = new DirectoryInfo($"{rootOutputDirectory.FullName}\\{rootDirectory.Name}");
-            CurrentDirectory = rootDirectory.FullName;
-            var currentOutputDirectory = new DirectoryInfo($"{rootOutputDirectory}\\{rootDirectory.Name}");
-            
-            LibraryParsing.ParseMetadata(rootDirectory, currentOutputDirectory, shouldOverwrite);
+            var currentInputDirectory = new DirectoryInfo($"{rootDirectory.FullName}\\{subDirectorySuffix}");
+            var currentOutputDirectory = new DirectoryInfo($"{rootOutputDirectory.FullName}\\{subDirectorySuffix}");
+            CurrentDirectoryPath = currentInputDirectory.FullName;
 
-            var subDirectories = rootDirectory.EnumerateDirectories();
-            foreach (var directory in subDirectories)
+            var jsonOutputDirectory = new DirectoryInfo($"{currentOutputDirectory.FullName}\\Json\\");
+            string sqliteFilepath = $"{rootOutputDirectory.FullName}\\Sqlite\\music_metadata.sqlite";
+
+            LibraryParsing.ParseMetadata(currentInputDirectory, jsonOutputDirectory, sqliteFilepath, shouldOverwrite);
+
+            var subDirectories = currentInputDirectory.EnumerateDirectories();
+            foreach (var subDirectory in subDirectories)
             {
-                ParseMetadataRecursive(directory, currentOutputDirectory, shouldOverwrite);
+                var suffix = $"{subDirectorySuffix}\\{subDirectory.Name}\\";
+                ParseMetadataRecursive(rootDirectory, rootOutputDirectory, suffix, shouldOverwrite);
             }
         }
     }

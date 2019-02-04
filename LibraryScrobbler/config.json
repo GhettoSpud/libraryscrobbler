@@ -1,0 +1,54 @@
+{
+    "id3Tags": {
+        "mapped": [
+            {
+                "id": "TRCK",
+                "name": "TrackNumber"
+            },
+            {
+                "id": "TCON",
+                "name": "Genre"
+            },
+            {
+                "id": "TIT2",
+                "name": "Title"
+            },
+            {
+                "id": "TPE1",
+                "name": "Artist"
+            },
+            {
+                "id": "TPE2",
+                "name": "AlbumArtist"
+            },
+            {
+                "id": "TALB",
+                "name": "Album"
+            },
+            {
+                "id": "TDRC",
+                "name": "Album"
+            },
+            {
+                "id": "COMM",
+                "name": "Comment"
+            },
+            {
+                "id": "APIC",
+                "name": "Artwork"
+            },
+            {
+                "id": "TENC",
+                "name": "EncodedBy"
+            },
+            {
+                "id": "TCOM",
+                "name": "ComposedBy"
+            }
+        ],
+        "ignored": [
+            "COMM",
+            "PRIV"
+        ]
+    }
+}

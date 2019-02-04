@@ -11,17 +11,21 @@
             <RowDefinition />
             <RowDefinition />
             <RowDefinition />
+            <RowDefinition />
         </Grid.RowDefinitions>
-        <StackPanel Grid.Row="0" Orientation="Horizontal">
-            <Button Height="25" Margin="5" Click="DirectoryButtonClicked" Content="Browse"/>
-            <TextBlock Height="20" Margin="5" Text="Root Directory:"/>
-            <TextBlock Name="directoryTextBox" Text="{Binding Path=RootDirectory}" Height="20" Margin="5"/>
+        <Button Grid.Row="0" Margin="5" Click="InputDirectoryButtonClicked" Content="Browse" HorizontalAlignment="Stretch"/>
+        <TextBlock Grid.Row="0" Margin="5" Text="Input Root Directory:" HorizontalAlignment="Stretch"/>
+        <TextBlock Grid.Row="0" Name="inputDirectoryTextBox" Text="{Binding Path=InputRootDirectoryPath}" HorizontalAlignment="Stretch" Background="Azure"/>
+            <StackPanel Grid.Row="1" Orientation="Horizontal">
+            <Button Height="25" Margin="5" Click="OutputDirectoryButtonClicked" Content="Browse"/>
+            <TextBlock Height="20" Margin="5" Text="Output Root Directory:"/>
+            <TextBlock Name="outputDirectoryTextBox" Text="{Binding Path=OutputRootDirectoryPath}" Height="20" HorizontalAlignment="Stretch" Margin="5" Background="AliceBlue"/>
         </StackPanel>
-        <StackPanel Grid.Row="1" Orientation="Horizontal">
+        <StackPanel Grid.Row="2" Orientation="Horizontal">
             <TextBlock Height="20" Margin="5" Text="Overwrite Existing Metadata Files"/>
             <CheckBox Name="ShouldOverwrite" Margin="5" VerticalAlignment="Center"/>
         </StackPanel>
-        <StackPanel Grid.Row="2" Orientation="Horizontal">
+        <StackPanel Grid.Row="3" Orientation="Horizontal">
             <Button Name="ParseButton" Height="25" Margin="5" Click="ParseButtonClicked" Content="Begin Parsing"/>
             <TextBlock Height="20" Text="Current Directory:"/>
             <TextBlock Height="20" Text="{Binding Path=CurrentDirectory}" Margin="5"/>

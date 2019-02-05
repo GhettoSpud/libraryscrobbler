@@ -99,7 +99,9 @@ namespace LibraryScrobbler
         {
             var directory = new DirectoryInfo(InputRootDirectoryPath);
             var outputDirectory = new DirectoryInfo(OutputRootDirectoryPath);
-            var shouldOverwrite = ShouldOverwrite.IsChecked ?? false;
+            bool shouldOverwrite = ShouldOverwrite.IsChecked ?? false;
+            bool exportSqlite = ExportSqlite.IsChecked ?? false;
+            bool exportJson = ExportJson.IsChecked ?? false;
 
             Task.Factory.StartNew(() =>
             {
@@ -108,7 +110,7 @@ namespace LibraryScrobbler
                     LibraryParsing.CreateDatabase(SqliteFilepath);
                 }
 
-                ParseMetadataRecursive(directory, outputDirectory, "", shouldOverwrite);
+                ParseMetadataRecursive(directory, outputDirectory, "", exportSqlite, exportJson, shouldOverwrite);
                 CurrentDirectoryPath = "Finished!";
             });
         }
@@ -117,6 +119,8 @@ namespace LibraryScrobbler
             DirectoryInfo rootDirectory,
             DirectoryInfo rootOutputDirectory,
             string subDirectorySuffix,
+            bool exportSqlite,
+            bool exportJson,
             bool shouldOverwrite)
         {
             var currentInputDirectory = new DirectoryInfo($"{rootDirectory.FullName}\\{subDirectorySuffix}");
@@ -132,7 +136,7 @@ namespace LibraryScrobbler
             foreach (var subDirectory in subDirectories)
             {
                 var suffix = $"{subDirectorySuffix}{subDirectory.Name}\\";
-                ParseMetadataRecursive(rootDirectory, rootOutputDirectory, suffix, shouldOverwrite);
+                ParseMetadataRecursive(rootDirectory, rootOutputDirectory, suffix, exportSqlite, exportJson, shouldOverwrite);
             }
         }
     }

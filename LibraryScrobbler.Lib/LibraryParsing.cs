@@ -38,6 +38,8 @@ namespace LibraryScrobbler.Lib
             }
         }
 
+        #region _createSql
+
         private static string _createSql =
 @"
 CREATE TABLE MusicFile (
@@ -118,11 +120,14 @@ FROM Album AS a
 GROUP BY a.Artist
 ;
 ";
+        #endregion
 
         public static void ParseMetadata(
             DirectoryInfo inputDirectory,
             DirectoryInfo jsonOutputDirectory,
             string sqliteFilepath,
+            bool exportSqlite,
+            bool exportJson,
             bool shouldOverwrite)
         {
             var files = inputDirectory.EnumerateFiles();
@@ -169,8 +174,15 @@ GROUP BY a.Artist
 
             if (fileTagMap.Any())
             {
-                ExportJson(fileTagMap, jsonOutputDirectory, shouldOverwrite);
-                ExportSqlite(fileTagMap, sqliteFilepath);
+                if (exportSqlite)
+                {
+                    ExportSqlite(fileTagMap, sqliteFilepath);
+                }
+
+                if (exportJson)
+                {
+                    ExportJson(fileTagMap, jsonOutputDirectory, shouldOverwrite);
+                }
             }
         }
 

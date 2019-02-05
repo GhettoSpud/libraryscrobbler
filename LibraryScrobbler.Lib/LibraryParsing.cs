@@ -43,13 +43,13 @@ namespace LibraryScrobbler.Lib
         private static string _createSql =
 @"
 CREATE TABLE MusicFile (
-    Id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    Id INTEGER NOT NULL PRIMARY KEY,
     Filename TEXT NOT NULL,
     ParsedOn INTEGER NOT NULL
 );
 
 CREATE TABLE Tag (
-    Id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    Id INTEGER NOT NULL PRIMARY KEY,
     MusicFileId INTEGER NOT NULL,
     TagName TEXT NOT NULL,
     TagValue TEXT NOT NULL,

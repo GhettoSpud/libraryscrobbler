@@ -97,7 +97,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Page Include="Pages\BrowsingPage.xaml">
+    <Page Include="Pages\ScrobblingPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -113,8 +113,8 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Pages\BrowsingPage.xaml.cs">
-      <DependentUpon>BrowsingPage.xaml</DependentUpon>
+    <Compile Include="Pages\ScrobblingPage.xaml.cs">
+      <DependentUpon>ScrobblingPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="Pages\ParsingPage.xaml.cs">
       <DependentUpon>ParsingPage.xaml</DependentUpon>

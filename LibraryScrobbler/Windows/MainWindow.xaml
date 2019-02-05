@@ -5,30 +5,46 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:LibraryScrobbler"
         mc:Ignorable="d"
-        Title="MainWindow" Height="200" Width="400">
+        Title="MainWindow" Height="240" Width="600">
     <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="100"/>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
         <Grid.RowDefinitions >
-            <RowDefinition />
-            <RowDefinition />
-            <RowDefinition />
-            <RowDefinition />
+            <RowDefinition/>
+            <RowDefinition/>
+            <RowDefinition/>
+            <RowDefinition/>
         </Grid.RowDefinitions>
-        <Button Grid.Row="0" Margin="5" Click="InputDirectoryButtonClicked" Content="Browse" HorizontalAlignment="Stretch"/>
-        <TextBlock Grid.Row="0" Margin="5" Text="Input Root Directory:" HorizontalAlignment="Stretch"/>
-        <TextBlock Grid.Row="0" Name="inputDirectoryTextBox" Text="{Binding Path=InputRootDirectoryPath}" HorizontalAlignment="Stretch" Background="Azure"/>
-            <StackPanel Grid.Row="1" Orientation="Horizontal">
-            <Button Height="25" Margin="5" Click="OutputDirectoryButtonClicked" Content="Browse"/>
-            <TextBlock Height="20" Margin="5" Text="Output Root Directory:"/>
-            <TextBlock Name="outputDirectoryTextBox" Text="{Binding Path=OutputRootDirectoryPath}" Height="20" HorizontalAlignment="Stretch" Margin="5" Background="AliceBlue"/>
-        </StackPanel>
-        <StackPanel Grid.Row="2" Orientation="Horizontal">
-            <TextBlock Height="20" Margin="5" Text="Overwrite Existing Metadata Files"/>
-            <CheckBox Name="ShouldOverwrite" Margin="5" VerticalAlignment="Center"/>
-        </StackPanel>
-        <StackPanel Grid.Row="3" Orientation="Horizontal">
-            <Button Name="ParseButton" Height="25" Margin="5" Click="ParseButtonClicked" Content="Begin Parsing"/>
-            <TextBlock Height="20" Text="Current Directory:"/>
-            <TextBlock Height="20" Text="{Binding Path=CurrentDirectory}" Margin="5"/>
-        </StackPanel>
+        <Button Grid.Column="0" Grid.Row="0" Height="25" Margin="5" VerticalAlignment="Center" HorizontalAlignment="Right" Padding="5,0,5,0" Click="InputDirectoryButtonClicked" Content="Browse"/>
+        <Grid Grid.Column="1" Grid.Row="0">
+            <Grid.RowDefinitions>
+                <RowDefinition/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+            <TextBlock Grid.Row="0" Margin="5,0,20,0" DockPanel.Dock="Top" VerticalAlignment="Center" Text="Input Root Directory:" FontFamily="Consolas" />
+            <TextBox Grid.Row="1" Margin="20,0,20,3" DockPanel.Dock="Bottom" VerticalAlignment="Center" Name="inputDirectoryTextBox" Text="{Binding Path=InputRootDirectoryPath}" TextWrapping="NoWrap" FontFamily="Consolas"/>
+        </Grid>
+        <Button Grid.Column="0" Grid.Row="1" Height="25" Margin="5" VerticalAlignment="Center" HorizontalAlignment="Right" Padding="5,0,5,0" Click="OutputDirectoryButtonClicked" Content="Browse"/>
+        <Grid Grid.Column="1" Grid.Row="1">
+            <Grid.RowDefinitions>
+                <RowDefinition/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+            <TextBlock Grid.Row="0" Margin="5,0,20,0" DockPanel.Dock="Top" VerticalAlignment="Center" Text="Output Root Directory:" FontFamily="Consolas" />
+            <TextBox Grid.Row="1" Margin="20,0,20,3" DockPanel.Dock="Bottom" VerticalAlignment="Center" Name="outputDirectoryTextBox"  Text="{Binding Path=OutputRootDirectoryPath}" TextWrapping="NoWrap" FontFamily="Consolas"/>
+        </Grid>
+        <CheckBox Grid.Column="0" Grid.Row="2" Margin="5" VerticalAlignment="Center" HorizontalAlignment="Right" Name="ShouldOverwrite"/>
+        <TextBlock Grid.Column="1" Grid.Row="2" Margin="5" VerticalAlignment="Center" Text="Overwrite Existing Metadata Files" FontFamily="Consolas"/>
+        <Button Grid.Column="0" Grid.Row="3" Height="25" Margin="5" VerticalAlignment="Center" HorizontalAlignment="Right" Padding="5,0,5,0" Name="ParseButton" Click="ParseButtonClicked" Content="Begin Parsing"/>
+        <Grid Grid.Column="1" Grid.Row="3">
+            <Grid.RowDefinitions>
+                <RowDefinition/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+            <TextBlock Grid.Row="0" Margin="5,0,20,0" DockPanel.Dock="Top" VerticalAlignment="Center" Text="Current Directory:" FontFamily="Consolas" />
+            <TextBlock Grid.Row="1" Margin="20,0,20,3" DockPanel.Dock="Bottom" VerticalAlignment="Center" Text="{Binding Path=CurrentDirectoryPath}" FontFamily="Consolas" Background="WhiteSmoke"/>
+        </Grid>
     </Grid>
 </Window>

@@ -17,6 +17,9 @@ namespace LibraryScrobbler.Lib
             if (File.Exists(sqliteFilepath))
                 File.Delete(sqliteFilepath);
 
+            Directory.CreateDirectory(sqliteFilepath); // Create all directories leading to the Sqlite file
+            Directory.Delete(sqliteFilepath); // Remove the last directory (because it was created with the filename we need to reference)
+
             SQLiteConnection.CreateFile(sqliteFilepath);
             string connectionString = $"DataSource={sqliteFilepath};";
 
@@ -35,7 +38,7 @@ namespace LibraryScrobbler.Lib
             }
         }
 
-private static string _createSql =
+        private static string _createSql =
 @"
 CREATE TABLE MusicFile (
     Id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
@@ -50,6 +53,70 @@ CREATE TABLE Tag (
     TagValue TEXT NOT NULL,
     ParsedOn INTEGER NOT NULL
 );
+
+CREATE VIEW Track AS
+SELECT 
+    f.Filename AS Filename,
+    title.TagValue AS Title,
+    artist.TagValue AS Artist,
+    albumArtist.TagValue AS AlbumArtist,
+    album.TagValue AS Album,
+    trackNumber.TagValue AS TrackNumber,
+    dateReleased.TagValue AS DateReleased,
+    genre.TagValue AS Genre,
+    dateAdded.tagValue AS DateAdded
+FROM MusicFile AS f
+LEFT JOIN Tag AS title
+    ON title.MusicFileId = f.Id
+    AND title.TagName LIKE 'Title'
+LEFT JOIN Tag AS artist
+    ON artist.MusicFileId = f.Id
+    AND artist.TagName LIKE 'Artist'
+LEFT JOIN Tag AS albumArtist
+    ON albumArtist.MusicFileId = f.Id
+    AND albumArtist.TagName LIKE 'AlbumArtist'
+LEFT JOIN Tag AS album
+    ON album.MusicFileId = f.Id
+    AND album.TagName LIKE 'Album'
+LEFT JOIN Tag AS trackNumber
+    ON trackNumber.MusicFileId = f.Id
+    AND trackNumber.TagName LIKE 'TrackNumber'
+LEFT JOIN Tag AS dateReleased
+    ON dateReleased.MusicFileId = f.Id
+    AND dateReleased.TagName LIKE 'Date'
+LEFT JOIN Tag AS genre
+    ON genre.MusicFileId = f.Id
+    AND genre.TagName LIKE 'Genre'
+LEFT JOIN Tag AS dateAdded
+    ON dateAdded.MusicFileId = f.Id
+    AND dateAdded.TagName LIKE 'DateAdded'
+;
+
+CREATE VIEW Album AS
+SELECT
+    t.Album AS Title,
+    CASE WHEN t.AlbumArtist IS NOT NULL
+        THEN t.AlbumArtist
+        ELSE t.Artist
+        END AS Artist,
+    t.DateReleased AS DateReleased, 
+    COUNT(*) AS TrackCount,
+    t.Genre AS Genre,
+    t.DateAdded AS DateAdded
+FROM Track AS t
+GROUP BY Album
+;
+
+CREATE VIEW Artist AS
+SELECT 
+    a.Artist AS Name,
+    COUNT(*) AS AlbumCount,
+    SUM(a.TrackCount) AS TrackCount,
+    MIN(a.DateAdded) AS FirstAlbumDateAdded,
+    MAX(a.DateAdded) AS LastAlbumDateAdded
+FROM Album AS a
+GROUP BY a.Artist
+;
 ";
 
         public static void ParseMetadata(
@@ -156,7 +223,7 @@ CREATE TABLE Tag (
         private static string _insertMusicFileSql =
 @"
 INSERT INTO MusicFile (Filename, ParsedOn) 
-VALUES (@filename, strftime('%s', 'now');
+VALUES (@filename, strftime('%s', 'now'));
 ";
 
         private static string _insertTagSql =
@@ -171,7 +238,7 @@ VALUES (@musicFileId, @tagName, @tagValue, strftime('%s', 'now'));
             bool shouldOverwrite)
         {
             var json = JsonConvert.SerializeObject(fileTagMap);
-            var tagOutputPath = $"{outputDirectory.FullName}\\Json\\{outputDirectory.Name}.json";
+            var tagOutputPath = $"{outputDirectory.FullName}\\{outputDirectory.Name}.json";
 
             if (shouldOverwrite || !File.Exists(tagOutputPath))
             {

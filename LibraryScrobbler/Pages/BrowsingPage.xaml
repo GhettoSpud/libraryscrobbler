@@ -7,7 +7,7 @@
       d:DesignHeight="450" d:DesignWidth="800"
       Title="BrowsingPage">
 
-    <TreeView ItemsSource="{Binding Source=}">
+    <TreeView ItemsSource="Foo {Binding Source=}">
         <TreeView.Background>
             <SolidColorBrush Color="White"></SolidColorBrush>
         </TreeView.Background>

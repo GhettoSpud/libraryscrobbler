@@ -75,6 +75,10 @@ namespace LibraryScrobbler
         {
             InitializeComponent();
             DataContext = this;
+
+            InputRootDirectoryPath = null;
+            OutputRootDirectoryPath = null;
+            CurrentDirectoryPath = null;
         }
 
         public void InputDirectoryButtonClicked(object sender, RoutedEventArgs args)
@@ -82,6 +86,13 @@ namespace LibraryScrobbler
             var folderPicker = new System.Windows.Forms.FolderBrowserDialog();
             var result = folderPicker.ShowDialog();
             InputRootDirectoryPath = folderPicker.SelectedPath;
+        }
+
+        public void OutputDirectoryButtonClicked(object sender, RoutedEventArgs args)
+        {
+            var folderPicker = new System.Windows.Forms.FolderBrowserDialog();
+            var result = folderPicker.ShowDialog();
+            OutputRootDirectoryPath = folderPicker.SelectedPath;
         }
 
         public void ParseButtonClicked(object sender, RoutedEventArgs args)
@@ -110,9 +121,9 @@ namespace LibraryScrobbler
         {
             var currentInputDirectory = new DirectoryInfo($"{rootDirectory.FullName}\\{subDirectorySuffix}");
             var currentOutputDirectory = new DirectoryInfo($"{rootOutputDirectory.FullName}\\{subDirectorySuffix}");
-            CurrentDirectoryPath = currentInputDirectory.FullName;
+            CurrentDirectoryPath = $"$\\{subDirectorySuffix}";
 
-            var jsonOutputDirectory = new DirectoryInfo($"{currentOutputDirectory.FullName}\\Json\\");
+            var jsonOutputDirectory = new DirectoryInfo($"{rootOutputDirectory.FullName}\\Json\\{subDirectorySuffix}");
             string sqliteFilepath = $"{rootOutputDirectory.FullName}\\Sqlite\\music_metadata.sqlite";
 
             LibraryParsing.ParseMetadata(currentInputDirectory, jsonOutputDirectory, sqliteFilepath, shouldOverwrite);
@@ -120,7 +131,7 @@ namespace LibraryScrobbler
             var subDirectories = currentInputDirectory.EnumerateDirectories();
             foreach (var subDirectory in subDirectories)
             {
-                var suffix = $"{subDirectorySuffix}\\{subDirectory.Name}\\";
+                var suffix = $"{subDirectorySuffix}{subDirectory.Name}\\";
                 ParseMetadataRecursive(rootDirectory, rootOutputDirectory, suffix, shouldOverwrite);
             }
         }

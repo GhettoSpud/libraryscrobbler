@@ -65,6 +65,8 @@ namespace LibraryScrobbler.Pages
             InputRootDirectoryPath = null;
             OutputRootDirectoryPath = null;
             CurrentDirectoryPath = null;
+
+            DataContext = this;
         }
 
         public void InputDirectoryButtonClicked(object sender, RoutedEventArgs args)

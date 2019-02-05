@@ -66,7 +66,15 @@ SELECT
     trackNumber.TagValue AS TrackNumber,
     dateReleased.TagValue AS DateReleased,
     genre.TagValue AS Genre,
-    dateAdded.tagValue AS DateAdded
+    CASE WHEN discNumber.TagValue IS NOT NULL
+        THEN discNumber.TagValue
+        ELSE '?'
+        END AS DiscNumber,
+    CASE WHEN totalDiscCount.TagValue IS NOT NULL
+        THEN totalDiscCount.TagValue
+        ELSE '?'
+        END AS TotalDiscCount,
+    dateAdded.TagValue AS DateAdded
 FROM MusicFile AS f
 LEFT JOIN Tag AS title
     ON title.MusicFileId = f.Id
@@ -89,6 +97,12 @@ LEFT JOIN Tag AS dateReleased
 LEFT JOIN Tag AS genre
     ON genre.MusicFileId = f.Id
     AND genre.TagName LIKE 'Genre'
+LEFT JOIN Tag AS discNumber
+    ON discNumber.MusicFileId = f.Id
+    AND discNumber.TagName LIKE 'DiscNumber'
+LEFT JOIN Tag AS totalDiscCount
+    ON totalDiscCount.MusicFileId = f.Id
+    AND totalDiscCount.TagName LIKE 'TotalDiscs'
 LEFT JOIN Tag AS dateAdded
     ON dateAdded.MusicFileId = f.Id
     AND dateAdded.TagName LIKE 'DateAdded'
@@ -104,6 +118,7 @@ SELECT
     t.DateReleased AS DateReleased, 
     COUNT(*) AS TrackCount,
     t.Genre AS Genre,
+    t.TotalDiscCount AS TotalDiscCount,
     t.DateAdded AS DateAdded
 FROM Track AS t
 GROUP BY Album

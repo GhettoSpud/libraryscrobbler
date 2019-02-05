@@ -36,7 +36,15 @@
         <Style x:Key="TrackTreeItemStyle" BasedOn="{StaticResource ArtistTreeItemStyle}" TargetType="{x:Type TextBlock}">
             <Setter Property="FontSize" Value="13"/>
             <Setter Property="Margin" Value="0,1,0,1"/>
-            <Setter Property="Text" Value="{Binding Title}"/>
+            <Setter Property="Text">
+                <Setter.Value>
+                    <MultiBinding StringFormat='{}{0}.{1:00} {2}'>
+                        <Binding Path="DiscNumber"/>
+                        <Binding Path="TrackNumber"/>
+                        <Binding Path="Title"/>
+                    </MultiBinding>
+                </Setter.Value>
+            </Setter>
         </Style>
     </Page.Resources>
     

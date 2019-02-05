@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Data;
 using System.Data.SQLite;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -53,41 +54,44 @@ namespace LibraryScrobbler
 
             dataSet.EnforceConstraints = false;
 
-            using (var connection = new SQLiteConnection(connectionString))
+            try
             {
-                connection.Open();
 
-                using (var transaction = connection.BeginTransaction())
+                using (var connection = new SQLiteConnection(connectionString))
                 {
-                    string artistQuery = "SELECT * FROM Artist";
-                    using (var artistCommand = new SQLiteCommand(artistQuery, connection, transaction))
-                    {
-                        using (var reader = artistCommand.ExecuteReader())
-                        {
-                            artistTable.Load(reader);
-                        }
-                    }
+                    connection.Open();
 
-                    string albumQuery = "SELECT * FROM Album";
-                    using (var albumCommand = new SQLiteCommand(albumQuery, connection, transaction))
+                    using (var transaction = connection.BeginTransaction())
                     {
-                        using (var reader = albumCommand.ExecuteReader())
+                        string artistQuery = "SELECT * FROM Artist";
+                        using (var artistCommand = new SQLiteCommand(artistQuery, connection, transaction))
                         {
-                            albumTable.Load(reader);
+                            using (var reader = artistCommand.ExecuteReader())
+                            {
+                                artistTable.Load(reader);
+                            }
                         }
-                    }
 
-                    string trackQuery = "SELECT * FROM Track";
-                    using (var trackCommand = new SQLiteCommand(trackQuery, connection, transaction))
-                    {
-                        using (var reader = trackCommand.ExecuteReader())
+                        string albumQuery = "SELECT * FROM Album";
+                        using (var albumCommand = new SQLiteCommand(albumQuery, connection, transaction))
                         {
-                            trackTable.Load(reader);
+                            using (var reader = albumCommand.ExecuteReader())
+                            {
+                                albumTable.Load(reader);
+                            }
                         }
+
+                        string trackQuery = "SELECT * FROM Track";
+                        using (var trackCommand = new SQLiteCommand(trackQuery, connection, transaction))
+                        {
+                            using (var reader = trackCommand.ExecuteReader())
+                            {
+                                trackTable.Load(reader);
+                            }
+                        }
+                        transaction.Commit();
                     }
-                    transaction.Commit();
                 }
-            }
 
             artistTable.ChildRelations.Add(
                 "Albums",
@@ -98,6 +102,12 @@ namespace LibraryScrobbler
                 "Tracks",
                 albumTable.Columns["Title"],
                 trackTable.Columns["Album"]);
+
+            }
+            catch (SQLiteException e)
+            {
+                Debug.WriteLine(e);
+            }
 
             return dataSet;
         }

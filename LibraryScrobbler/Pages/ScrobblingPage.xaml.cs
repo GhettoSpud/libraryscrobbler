@@ -39,7 +39,7 @@ namespace LibraryScrobbler
 
         private DataSet BuildDataSet()
         {
-            var sqliteFilepath = "D:\\files\\projects\\libraryscrobbler-data\\metadata\\Sqlite\\music_metadata.sqlite";
+            var sqliteFilepath = $"{Properties.Settings.Default.OutputRootDirectoryPath}\\Sqlite\\music_metadata.sqlite";
             string connectionString = $"DataSource={sqliteFilepath};";
 
             var dataSet = new DataSet("Data");

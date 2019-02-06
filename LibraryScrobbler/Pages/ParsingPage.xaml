@@ -61,8 +61,8 @@
                 <RowDefinition/>
                 <RowDefinition/>
             </Grid.RowDefinitions>
-            <TextBlock Grid.Row="0" Margin="5,0,20,0" DockPanel.Dock="Top" VerticalAlignment="Center" Text="Current Directory:" FontFamily="Consolas" />
-            <TextBlock Grid.Row="1" Margin="20,0,20,3" DockPanel.Dock="Bottom" VerticalAlignment="Center" Text="{Binding Path=CurrentDirectoryPath}" FontFamily="Consolas" Background="WhiteSmoke"/>
+            <TextBlock Text="Current Directory:" FontFamily="Consolas" Grid.Row="0" Margin="5,0,20,0" DockPanel.Dock="Top" VerticalAlignment="Center" />
+            <TextBlock Name="currentDirectoryTextBlock" Text="{Binding Path=CurrentDirectoryPath}" FontFamily="Consolas" Background="WhiteSmoke" Grid.Row="1" Margin="20,0,20,3" DockPanel.Dock="Bottom" VerticalAlignment="Center" />
         </Grid>
     </Grid>
 </Page>

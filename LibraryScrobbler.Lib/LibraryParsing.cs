@@ -56,25 +56,37 @@ CREATE TABLE Tag (
     ParsedOn INTEGER NOT NULL
 );
 
+CREATE VIEW TrackGenre AS
+SELECT
+    f.Filename AS Filename,
+    genre.TagValue AS Genre
+FROM MusicFile AS f
+INNER JOIN Tag AS genre
+    ON genre.MusicFileId = f.Id
+    AND genre.TagName LIKE 'Genre'
+;
+
+CREATE VIEW TrackArtist AS
+SELECT
+    f.Filename AS Filename,
+    artist.TagValue AS Artist
+FROM MusicFile AS f
+INNER JOIN Tag AS artist
+    ON artist.MusicFileId = f.Id
+    AND artist.TagName LIKE 'Artist'
+;
+
 CREATE VIEW Track AS
 SELECT 
     f.Filename AS Filename,
     title.TagValue AS Title,
-    artist.TagValue AS Artist,
     albumArtist.TagValue AS AlbumArtist,
     album.TagValue AS Album,
     trackNumber.TagValue AS TrackNumber,
     dateReleased.TagValue AS DateReleased,
-    genre.TagValue AS Genre,
-    CASE WHEN discNumber.TagValue IS NOT NULL
-        THEN discNumber.TagValue
-        ELSE '?'
-        END AS DiscNumber,
-    CASE WHEN totalDiscCount.TagValue IS NOT NULL
-        THEN totalDiscCount.TagValue
-        ELSE '?'
-        END AS TotalDiscCount,
-    dateAdded.TagValue AS DateAdded
+    discNumber.TagValue AS DiscNumber,
+    discTotal.TagValue AS DiscTotal,
+    dateAdded.TagValue AS DateAdded,
 FROM MusicFile AS f
 LEFT JOIN Tag AS title
     ON title.MusicFileId = f.Id
@@ -100,28 +112,25 @@ LEFT JOIN Tag AS genre
 LEFT JOIN Tag AS discNumber
     ON discNumber.MusicFileId = f.Id
     AND discNumber.TagName LIKE 'DiscNumber'
-LEFT JOIN Tag AS totalDiscCount
-    ON totalDiscCount.MusicFileId = f.Id
-    AND totalDiscCount.TagName LIKE 'TotalDiscs'
+LEFT JOIN Tag AS discTotal
+    ON discTotal.MusicFileId = f.Id
+    AND discTotal.TagName LIKE 'DiscTotal'
 LEFT JOIN Tag AS dateAdded
     ON dateAdded.MusicFileId = f.Id
     AND dateAdded.TagName LIKE 'DateAdded'
+GROUP BY f.Id -- Track does not permit certain (most) tags to be duplicated. Those tags without support for duplication in this application are condensed into a single track row by this Grouping.
 ;
 
 CREATE VIEW Album AS
 SELECT
     t.Album AS Title,
-    CASE WHEN t.AlbumArtist IS NOT NULL
-        THEN t.AlbumArtist
-        ELSE t.Artist
-        END AS Artist,
-    t.DateReleased AS DateReleased, 
+    t.AlbumArtist AS AlbumArtist,
+    t.DateReleased AS DateReleased,
     COUNT(*) AS TrackCount,
-    t.Genre AS Genre,
-    t.TotalDiscCount AS TotalDiscCount,
+    t.DiscTotal AS DiscTotal,
     t.DateAdded AS DateAdded
 FROM Track AS t
-GROUP BY Album
+GROUP BY t.Album, t.AlbumArtist, t.DateReleased, t.DiscTotal
 ;
 
 CREATE VIEW Artist AS
@@ -147,7 +156,7 @@ GROUP BY a.Artist
         {
             var files = inputDirectory.EnumerateFiles();
             var validFiles = files.Where(n => SupportedExtensions.Contains(n.Extension));
-            var fileTagMap = new Dictionary<string, ILookup<string, string>>();
+            var fileTagMap = new Dictionary<string, IDictionary<string, IEnumerable<string>>>();
 
             foreach (var file in validFiles)
             {
@@ -165,15 +174,9 @@ GROUP BY a.Artist
 
                 if (tagFile.GetTag(TagLib.TagTypes.Xiph) is TagLib.Ogg.XiphComment xiph)
                 {
-                    // xiph is already structured like IEnumerable<IGrouping<string, string>>, but it does not implement ILookup or IGrouping.
-                    // Because I couldn't find a clean way to form an ILookup from the contents of xiph, 
-                    //   I flatten the fields & their contents into a list of tuples, and form the lookup from there.
-                    var fieldMap = xiph.SelectMany(field =>
-                        xiph.GetField(field).Select(value =>
-                            new Tuple<string, string>(field, value)));
-                    ILookup<string, string> tagMap = fieldMap.ToLookup(
-                        n => n.Item1,
-                        n => n.Item2);
+                    IDictionary<string, IEnumerable<string>> tagMap = xiph.ToDictionary(
+                        fieldName => fieldName,
+                        fieldName => xiph.GetField(fieldName).AsEnumerable());
 
                     fileTagMap.Add(file.Name, tagMap);
                     continue;
@@ -181,7 +184,7 @@ GROUP BY a.Artist
 
                 if (tagFile.GetTag(TagLib.TagTypes.Id3v2) is TagLib.Id3v2.Tag id3File)
                 {
-                    ILookup<string, string> tagMap = GetID3v2TagMap(id3File);
+                    IDictionary<string, IEnumerable<string>> tagMap = GetID3v2TagMap(id3File);
                     fileTagMap.Add(file.Name, tagMap);
                     continue;
                 }
@@ -202,7 +205,7 @@ GROUP BY a.Artist
         }
 
         private static int ExportSqlite(
-            IReadOnlyDictionary<string, ILookup<string, string>> fileTagDictionary,
+            IDictionary<string, IDictionary<string, IEnumerable<string>>> fileTagDictionary,
             string sqliteFilepath)
         {
             int numRowsAffected = 0;
@@ -222,16 +225,16 @@ GROUP BY a.Artist
                         }
 
                         long musicFileRowId = connection.LastInsertRowId;
-                        foreach (IGrouping<string, string> tagMap in fileMap.Value)
+                        foreach (KeyValuePair<string, IEnumerable<string>> tagMap in fileMap.Value)
                         {
                             string tagName = tagMap.Key;
-                            foreach (string value in tagMap)
+                            foreach (string tagValue in tagMap.Value)
                             {
                                 using (var command = new SQLiteCommand(_insertTagSql, connection, transaction))
                                 {
                                     command.Parameters.AddWithValue("musicFileId", musicFileRowId);
                                     command.Parameters.AddWithValue("tagName", tagName);
-                                    command.Parameters.AddWithValue("tagValue", value);
+                                    command.Parameters.AddWithValue("tagValue", tagValue);
                                     numRowsAffected += command.ExecuteNonQuery();
                                 }
                             }
@@ -260,7 +263,7 @@ VALUES (@musicFileId, @tagName, @tagValue, strftime('%s', 'now'));
 ";
 
         private static void ExportJson(
-            IReadOnlyDictionary<string, ILookup<string, string>> fileTagMap,
+            IDictionary<string, IDictionary<string, IEnumerable<string>>> fileTagMap,
             DirectoryInfo outputDirectory,
             bool shouldOverwrite)
         {
@@ -278,11 +281,11 @@ VALUES (@musicFileId, @tagName, @tagValue, strftime('%s', 'now'));
             }
         }
 
-        private static ILookup<string, string> GetID3v2TagMap(TagLib.Id3v2.Tag id3File)
+        private static IDictionary<string, IEnumerable<string>> GetID3v2TagMap(TagLib.Id3v2.Tag id3File)
         {
             // Id3 tags are guaranteed to be unique, but multiple tags might be mapped to the same field title
             //   Thus, there is no unique key to use for a dictionary.
-            var tagValueMap = new List<Tuple<string, string>>();
+            var tagValueMap = new Dictionary<string, List<string>>();
 
             foreach (var frame in id3File)
             {
@@ -293,10 +296,18 @@ VALUES (@musicFileId, @tagName, @tagValue, strftime('%s', 'now'));
                 string title = GetId3v2TagTitle(frame);
                 string value = GetID3v2TagValue(frame);
 
-                tagValueMap.Add(new Tuple<string, string>(title, value));
+                if (!tagValueMap.ContainsKey(title))
+                {
+                    tagValueMap[title] = new List<string>();
+                }
+
+                tagValueMap[title].Add(value);
             }
 
-            return tagValueMap.ToLookup(n => n.Item1, n => n.Item2);
+            return tagValueMap.ToDictionary(
+                n => n.Key,
+                n => n.Value.AsEnumerable()
+                );
         }
 
         private static string GetId3v2TagTitle(TagLib.Id3v2.Frame frame)

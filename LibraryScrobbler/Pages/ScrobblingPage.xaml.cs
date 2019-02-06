@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Data;
 using System.Data.SQLite;
 using System.Diagnostics;
@@ -19,27 +20,100 @@ using System.Windows.Shapes;
 
 namespace LibraryScrobbler
 {
-    public partial class ScrobblingPage : Page
+    public partial class ScrobblingPage : Page, INotifyPropertyChanged
     {
+        #region Properties
+
         private Dictionary<TreeViewItem, DataRow> _treeViewItemRowMap = new Dictionary<TreeViewItem, DataRow>();
 
-        public DataView Artists { get; private set; }
+        private DataView _artists;
+        public DataView Artists {
+            get { return _artists; }
+            private set
+            {
+                _artists = value;
+                RaisePropertyChanged("Artists");
+            }
+        }
+
+        private string _metadataRootDirectoryPath;
+        public string MetadataRootDirectoryPath
+        {
+            get { return _metadataRootDirectoryPath; }
+            set
+            {
+                _metadataRootDirectoryPath = value;
+                RaisePropertyChanged("MetadataRootDirectoryPath");
+            }
+        }
+
+        private string _refreshMessage;
+        public string RefreshMessage
+        {
+            get { return _refreshMessage; }
+            set
+            {
+                _refreshMessage = value;
+                RaisePropertyChanged("RefreshMessage");
+            }
+        }
+
+        private Brush _refreshMessageColor;
+        public Brush RefreshMessageColor
+        {
+            get { return _refreshMessageColor; }
+            set
+            {
+                _refreshMessageColor = value;
+                RaisePropertyChanged("RefreshMessageColor");
+            }
+        }
+
+        private void RaisePropertyChanged(string propName)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propName));
+        }
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        #endregion
 
         public ScrobblingPage()
         {
             InitializeComponent();
 
-            var dataSet = BuildDataSet();
+            MetadataRootDirectoryPath = Properties.Settings.Default.OutputRootDirectoryPath;
 
-            DataContext = new
-            {
-                Artists = dataSet.Tables["Artist"].DefaultView,
-            };
+            var dataSet = BuildDataSet(MetadataRootDirectoryPath);
+            RefreshMessage = "";
+
+            Artists = dataSet.Tables["Artist"].DefaultView;
+
+            DataContext = this;
         }
 
-        private DataSet BuildDataSet()
+        private void MetadataRootDirectoryRefreshButtonClicked(object sender, RoutedEventArgs args)
         {
-            var sqliteFilepath = $"{Properties.Settings.Default.OutputRootDirectoryPath}\\Sqlite\\music_metadata.sqlite";
+            if (MetadataRootDirectoryPath == Properties.Settings.Default.OutputRootDirectoryPath)
+            {
+                RefreshMessage = "This metadata is already loaded!";
+                RefreshMessageColor = new SolidColorBrush(Colors.Gold);
+                return;
+            }
+
+            var dataSet = BuildDataSet(MetadataRootDirectoryPath);
+
+            if (dataSet == null)
+                return;
+
+            Artists = dataSet.Tables["Artist"].DefaultView;
+
+            Properties.Settings.Default.OutputRootDirectoryPath = MetadataRootDirectoryPath;
+            Properties.Settings.Default.Save();
+        }
+
+        private DataSet BuildDataSet(string metadataRootDirectoryPath)
+        {
+            var sqliteFilepath = $"{metadataRootDirectoryPath}\\Sqlite\\music_metadata.sqlite";
             string connectionString = $"DataSource={sqliteFilepath};";
 
             var dataSet = new DataSet("Data");
@@ -56,6 +130,8 @@ namespace LibraryScrobbler
 
             try
             {
+                RefreshMessage = "Loading Data...";
+                RefreshMessageColor = new SolidColorBrush(Colors.Gold);
 
                 using (var connection = new SQLiteConnection(connectionString))
                 {
@@ -93,20 +169,25 @@ namespace LibraryScrobbler
                     }
                 }
 
-            artistTable.ChildRelations.Add(
-                "Albums",
-                artistTable.Columns["Name"],
-                albumTable.Columns["Artist"]);
+                artistTable.ChildRelations.Add(
+                    "Albums",
+                    artistTable.Columns["Name"],
+                    albumTable.Columns["Artist"]);
 
-            albumTable.ChildRelations.Add(
-                "Tracks",
-                albumTable.Columns["Title"],
-                trackTable.Columns["Album"]);
+                albumTable.ChildRelations.Add(
+                    "Tracks",
+                    albumTable.Columns["Title"],
+                    trackTable.Columns["Album"]);
 
+                RefreshMessage = "Refreshed successfully!";
+                RefreshMessageColor = new SolidColorBrush(Colors.LawnGreen);
             }
             catch (SQLiteException e)
             {
+                RefreshMessage = $"ERROR: {e.Message}";
+                RefreshMessageColor = new SolidColorBrush(Colors.Red);
                 Debug.WriteLine(e);
+                return null;
             }
 
             return dataSet;

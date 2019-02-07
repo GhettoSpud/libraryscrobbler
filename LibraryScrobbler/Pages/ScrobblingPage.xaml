@@ -13,7 +13,7 @@
             <Setter Property="FontFamily" Value="Consolas"/>
             <Setter Property="Text">
                 <Setter.Value>
-                    <MultiBinding StringFormat='{}({0} / {1}) {2}'>
+                    <MultiBinding StringFormat='{}({0:0}) {2}'>
                         <Binding Path="AlbumCount"/>
                         <Binding Path="TrackCount"/>
                         <Binding Path="Name"/>
@@ -41,7 +41,7 @@
             <Setter Property="Margin" Value="0,1,0,1"/>
             <Setter Property="Text">
                 <Setter.Value>
-                    <MultiBinding StringFormat='{}{0} {1} {2}'>
+                    <MultiBinding StringFormat="{}{0:#'.'}{1:# }{2}">
                         <Binding TargetNullValue="" Path="DiscNumber"/>
                         <Binding TargetNullValue="" Path="TrackNumber"/>
                         <Binding TargetNullValue="&lt;null&gt;" Path="Title"/>

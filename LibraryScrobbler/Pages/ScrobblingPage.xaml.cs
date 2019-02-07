@@ -84,22 +84,14 @@ namespace LibraryScrobbler
             MetadataRootDirectoryPath = Properties.Settings.Default.OutputRootDirectoryPath;
 
             var dataSet = BuildDataSet(MetadataRootDirectoryPath);
-            RefreshMessage = "";
 
-            Artists = dataSet.Tables["Artist"].DefaultView;
+            Artists = dataSet?.Tables["Artist"]?.DefaultView;
 
             DataContext = this;
         }
 
         private void MetadataRootDirectoryRefreshButtonClicked(object sender, RoutedEventArgs args)
         {
-            if (MetadataRootDirectoryPath == Properties.Settings.Default.OutputRootDirectoryPath)
-            {
-                RefreshMessage = "This metadata is already loaded!";
-                RefreshMessageColor = new SolidColorBrush(Colors.Gold);
-                return;
-            }
-
             var dataSet = BuildDataSet(MetadataRootDirectoryPath);
 
             if (dataSet == null)
@@ -139,7 +131,7 @@ namespace LibraryScrobbler
 
                     using (var transaction = connection.BeginTransaction())
                     {
-                        string artistQuery = "SELECT * FROM Artist";
+                        string artistQuery = "SELECT * FROM Artist ORDER BY Name";
                         using (var artistCommand = new SQLiteCommand(artistQuery, connection, transaction))
                         {
                             using (var reader = artistCommand.ExecuteReader())
@@ -148,7 +140,7 @@ namespace LibraryScrobbler
                             }
                         }
 
-                        string albumQuery = "SELECT * FROM Album";
+                        string albumQuery = "SELECT * FROM Album ORDER BY DateReleased";
                         using (var albumCommand = new SQLiteCommand(albumQuery, connection, transaction))
                         {
                             using (var reader = albumCommand.ExecuteReader())
@@ -157,7 +149,7 @@ namespace LibraryScrobbler
                             }
                         }
 
-                        string trackQuery = "SELECT * FROM Track";
+                        string trackQuery = "SELECT * FROM Track ORDER BY DiscNumber, TrackNumber";
                         using (var trackCommand = new SQLiteCommand(trackQuery, connection, transaction))
                         {
                             using (var reader = trackCommand.ExecuteReader())
@@ -172,14 +164,14 @@ namespace LibraryScrobbler
                 artistTable.ChildRelations.Add(
                     "Albums",
                     artistTable.Columns["Name"],
-                    albumTable.Columns["Artist"]);
+                    albumTable.Columns["AlbumArtist"]);
 
                 albumTable.ChildRelations.Add(
                     "Tracks",
                     albumTable.Columns["Title"],
                     trackTable.Columns["Album"]);
 
-                RefreshMessage = "Refreshed successfully!";
+                RefreshMessage = "Data loaded successfully!";
                 RefreshMessageColor = new SolidColorBrush(Colors.LawnGreen);
             }
             catch (SQLiteException e)

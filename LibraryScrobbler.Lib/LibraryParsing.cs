@@ -80,13 +80,14 @@ CREATE VIEW Track AS
 SELECT 
     f.Filename AS Filename,
     title.TagValue AS Title,
+    GROUP_CONCAT(DISTINCT trackArtist.Artist) AS Artists,
     albumArtist.TagValue AS AlbumArtist,
     album.TagValue AS Album,
-    trackNumber.TagValue AS TrackNumber,
+    CAST(trackNumber.TagValue AS INTEGER) AS TrackNumber,
     dateReleased.TagValue AS DateReleased,
-    discNumber.TagValue AS DiscNumber,
-    discTotal.TagValue AS DiscTotal,
-    dateAdded.TagValue AS DateAdded,
+    CAST(discNumber.TagValue AS INTEGER) AS DiscNumber,
+    CAST(discTotal.TagValue AS INTEGER) AS DiscTotal,
+    dateAdded.TagValue AS DateAdded
 FROM MusicFile AS f
 LEFT JOIN Tag AS title
     ON title.MusicFileId = f.Id
@@ -118,13 +119,18 @@ LEFT JOIN Tag AS discTotal
 LEFT JOIN Tag AS dateAdded
     ON dateAdded.MusicFileId = f.Id
     AND dateAdded.TagName LIKE 'DateAdded'
+LEFT JOIN TrackArtist AS trackArtist
+    ON trackArtist.Filename = f.Filename
 GROUP BY f.Id -- Track does not permit certain (most) tags to be duplicated. Those tags without support for duplication in this application are condensed into a single track row by this Grouping.
 ;
 
 CREATE VIEW Album AS
 SELECT
     t.Album AS Title,
-    t.AlbumArtist AS AlbumArtist,
+    CASE WHEN t.AlbumArtist IS NOT NULL
+        THEN t.AlbumArtist
+        ELSE t.Artists 
+        END AS AlbumArtist,
     t.DateReleased AS DateReleased,
     COUNT(*) AS TrackCount,
     t.DiscTotal AS DiscTotal,
@@ -135,13 +141,13 @@ GROUP BY t.Album, t.AlbumArtist, t.DateReleased, t.DiscTotal
 
 CREATE VIEW Artist AS
 SELECT 
-    a.Artist AS Name,
+    a.AlbumArtist AS Name,
     COUNT(*) AS AlbumCount,
     SUM(a.TrackCount) AS TrackCount,
     MIN(a.DateAdded) AS FirstAlbumDateAdded,
     MAX(a.DateAdded) AS LastAlbumDateAdded
 FROM Album AS a
-GROUP BY a.Artist
+GROUP BY a.AlbumArtist
 ;
 ";
         #endregion

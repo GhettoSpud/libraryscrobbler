@@ -9,7 +9,7 @@
     <Page.Resources>
         <Style x:Key="ArtistTreeItemStyle" TargetType="{x:Type TextBlock}">
             <Setter Property="VerticalAlignment" Value="Center"/>
-            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="FontSize" Value="16"/>
             <Setter Property="Margin" Value="0,3,0,3"/>
             <Setter Property="FontFamily" Value="Consolas"/>
             <Setter Property="Text">
@@ -23,13 +23,8 @@
             </Setter>
         </Style>
 
-        <Style x:Key="ArtistTreeItemImageStyle" TargetType="{x:Type Image}">
-            <Setter Property="VerticalAlignment" Value="Center"/>
-            <Setter Property="Source" Value="{StaticResource EllipsisHorizontalImage}"/>
-        </Style>
-
         <Style x:Key="AlbumTreeItemStyle" BasedOn="{StaticResource ArtistTreeItemStyle}" TargetType="{x:Type TextBlock}">
-            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="FontSize" Value="15"/>
             <Setter Property="Margin" Value="0,2,0,2"/>
             <Setter Property="FontStyle" Value="Italic"/>
             <Setter Property="Text">
@@ -43,7 +38,7 @@
         </Style>
 
         <Style x:Key="TrackTextBlockStyle" BasedOn="{StaticResource ArtistTreeItemStyle}" TargetType="{x:Type TextBlock}">
-            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="FontSize" Value="14"/>
             <Setter Property="Text">
                 <Setter.Value>
                     <MultiBinding StringFormat="{}{0:#'.'}{1:# }{2}">
@@ -129,18 +124,18 @@
                             <HierarchicalDataTemplate.ItemTemplate>
 
                                 <DataTemplate>
-                                    <Grid Height="20" Background="Transparent">
+                                    <Grid Background="Transparent">
                                         <Grid.ColumnDefinitions>
-                                            <ColumnDefinition/>
                                             <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition/>
                                         </Grid.ColumnDefinitions>
 
-                                        <TextBlock Style="{StaticResource TrackTextBlockStyle}" Grid.Column="0"/>
-                                        <StackPanel Grid.Column="1" Style="{StaticResource TrackOptionsPanelStyle}">
-                                            <Button HorizontalAlignment="Left" Background="Transparent" Foreground="Transparent" BorderBrush="Transparent" IsHitTestVisible="False" Grid.Column="1">
+                                        <StackPanel Grid.Column="0" Style="{StaticResource TrackOptionsPanelStyle}">
+                                            <Button Style="{StaticResource LastFmButtonStyle}" HorizontalAlignment="Left" Grid.Column="1">
                                                 <Path Style="{StaticResource LastFmImageStyle}"/>
                                             </Button>
                                         </StackPanel>
+                                        <TextBlock Style="{StaticResource TrackTextBlockStyle}" Grid.Column="1"/>
                                     </Grid>
                                 </DataTemplate>
 

@@ -36,39 +36,6 @@ namespace LibraryScrobbler
             }
         }
 
-        private int _trackCount = 0;
-        public int TrackCount
-        {
-            get { return _trackCount; }
-            private set
-            {
-                _trackCount = value;
-                RaisePropertyChanged("TrackCount");
-            }
-        }
-
-        private int _albumCount = 0;
-        public int AlbumCount
-        {
-            get { return _albumCount; }
-            private set
-            {
-                _albumCount = value;
-                RaisePropertyChanged("AlbumCount");
-            }
-        }
-
-        private int _artistCount = 0;
-        public int ArtistCount
-        {
-            get { return _artistCount; }
-            private set
-            {
-                _artistCount = value;
-                RaisePropertyChanged("ArtistCount");
-            }
-        }
-
         private string _metadataRootDirectoryPath;
         public string MetadataRootDirectoryPath
         {
@@ -208,19 +175,13 @@ namespace LibraryScrobbler
             {
                 RefreshMessage = $"ERROR: {e.Message}";
                 RefreshMessageColor = new SolidColorBrush(Colors.Red);
-                ArtistCount = 0;
-                AlbumCount = 0;
-                TrackCount = 0;
 
                 Debug.WriteLine(e);
                 return null;
             }
 
-            RefreshMessage = "Data loaded successfully!";
+            RefreshMessage = $"Successfully loaded {artistTable.Rows.Count} Artists {albumTable.Rows.Count} Albums and {trackTable.Rows.Count} Tracks";
             RefreshMessageColor = new SolidColorBrush(Colors.LawnGreen);
-            ArtistCount = artistTable.Rows.Count;
-            AlbumCount = albumTable.Rows.Count;
-            TrackCount = trackTable.Rows.Count;
 
             return dataSet;
         }

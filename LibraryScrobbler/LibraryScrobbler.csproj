@@ -150,13 +150,27 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <None Include="App.config" />
+    <None Include="App.config">
+      <SubType>Designer</SubType>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\LibraryScrobbler.Lib\LibraryScrobbler.Lib.csproj">
       <Project>{4c7fdcb4-1a22-4029-a814-e9408cc1ce49}</Project>
       <Name>LibraryScrobbler.Lib</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Assets\Images\2x\baseline_more_horiz_black_18dp.png" />
+    <Resource Include="Assets\Images\2x\baseline_more_vert_black_18dp.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Assets\Images\1x\baseline_more_horiz_black_18dp.png" />
+    <Resource Include="Assets\Images\1x\baseline_more_vert_black_18dp.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Assets\Images\svg\lastfm-brands.svg" />
+    <Resource Include="Assets\Images\svg\lastfm-square-brands.svg" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\packages\System.Data.SQLite.Core.1.0.109.2\build\net46\System.Data.SQLite.Core.targets" Condition="Exists('..\packages\System.Data.SQLite.Core.1.0.109.2\build\net46\System.Data.SQLite.Core.targets')" />

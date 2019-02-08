@@ -3,11 +3,13 @@
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+      xmlns:window="clr-namespace:LibraryScrobbler"
       mc:Ignorable="d" 
       d:DesignHeight="240" d:DesignWidth="600"
       Title="BrowsingPage">
     <Page.Resources>
         <Style x:Key="ArtistTreeItemStyle" TargetType="{x:Type TextBlock}">
+            <Setter Property="VerticalAlignment" Value="Center"/>
             <Setter Property="FontSize" Value="14"/>
             <Setter Property="Margin" Value="0,3,0,3"/>
             <Setter Property="FontFamily" Value="Consolas"/>
@@ -20,6 +22,11 @@
                     </MultiBinding>
                 </Setter.Value>
             </Setter>
+        </Style>
+
+        <Style x:Key="ArtistTreeItemImageStyle" TargetType="{x:Type Image}">
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="Source" Value="{StaticResource EllipsisHorizontalImage}"/>
         </Style>
         
         <Style x:Key="AlbumTreeItemStyle" BasedOn="{StaticResource ArtistTreeItemStyle}" TargetType="{x:Type TextBlock}">
@@ -35,7 +42,7 @@
                 </Setter.Value>
             </Setter>
         </Style>
-        
+
         <Style x:Key="TrackTreeItemStyle" BasedOn="{StaticResource ArtistTreeItemStyle}" TargetType="{x:Type TextBlock}">
             <Setter Property="FontSize" Value="13"/>
             <Setter Property="Margin" Value="0,1,0,1"/>
@@ -49,6 +56,7 @@
                 </Setter.Value>
             </Setter>
         </Style>
+
     </Page.Resources>
 
     <Grid Background="White">
@@ -58,7 +66,6 @@
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition Height="60"/>
-            <RowDefinition Height="40"/>
             <RowDefinition/>
         </Grid.RowDefinitions>
 
@@ -71,22 +78,12 @@
             </Grid.RowDefinitions>
             <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="5,0,20,0" VerticalAlignment="Center">
                 <TextBlock Text="Metadata Root Directory: " FontFamily="Consolas"/>
-                <TextBlock FontFamily="Consolas" Text="{Binding RefreshMessage}" Foreground="{Binding RefreshMessageColor}"></TextBlock>
+                <TextBlock Text="{Binding RefreshMessage}" Foreground="{Binding RefreshMessageColor}" FontFamily="Consolas"></TextBlock>
             </StackPanel>
             <TextBox Grid.Row="1" Name="metadataRootDirectoryTextBox" Text="{Binding MetadataRootDirectoryPath, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"  Margin="20,0,20,3" VerticalAlignment="Center" TextWrapping="NoWrap" FontFamily="Consolas"/>
         </Grid>
 
-        <TextBlock Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="1" FontFamily="Consolas" FontSize="14" VerticalAlignment="Center" HorizontalAlignment="Center">
-            <TextBlock.Text>
-                <MultiBinding StringFormat="Loaded {0} Artists, {1} Albums, {2} Tracks">
-                    <Binding Path="ArtistCount"/>
-                    <Binding Path="AlbumCount"/>
-                    <Binding Path="TrackCount"/>
-                </MultiBinding>
-            </TextBlock.Text>
-        </TextBlock>
-        
-        <TreeView ItemsSource="{Binding Artists}" Grid.Column="0" Grid.Row="2" Grid.ColumnSpan="2" Margin="10,10,10,10" BorderBrush="White" AlternationCount="2">
+        <TreeView ItemsSource="{Binding Artists}" Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="2" Margin="10,10,10,10" BorderBrush="White" AlternationCount="2">
             <TreeView.ItemTemplate>
                 <HierarchicalDataTemplate ItemsSource="{Binding Albums}">
                     <TextBlock Style="{StaticResource ArtistTreeItemStyle}"/>
@@ -97,7 +94,15 @@
                             <HierarchicalDataTemplate.ItemTemplate>
 
                                 <DataTemplate>
-                                    <TextBlock Style="{StaticResource TrackTreeItemStyle}"/>
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition/>
+                                            <ColumnDefinition/>
+                                        </Grid.ColumnDefinitions>
+
+                                        <Path Style="{StaticResource LastFmImageStyle}" Fill="#ba0000" Grid.Column="0"/>
+                                        <TextBlock Style="{StaticResource TrackTreeItemStyle}" Grid.Column="1"/>
+                                    </Grid>
                                 </DataTemplate>
 
                             </HierarchicalDataTemplate.ItemTemplate>

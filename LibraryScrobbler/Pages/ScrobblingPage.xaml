@@ -27,7 +27,7 @@
             <Setter Property="VerticalAlignment" Value="Center"/>
             <Setter Property="Source" Value="{StaticResource EllipsisHorizontalImage}"/>
         </Style>
-        
+
         <Style x:Key="AlbumTreeItemStyle" BasedOn="{StaticResource ArtistTreeItemStyle}" TargetType="{x:Type TextBlock}">
             <Setter Property="FontSize" Value="13"/>
             <Setter Property="Margin" Value="0,2,0,2"/>
@@ -42,9 +42,8 @@
             </Setter>
         </Style>
 
-        <Style x:Key="TrackTreeItemStyle" BasedOn="{StaticResource ArtistTreeItemStyle}" TargetType="{x:Type TextBlock}">
+        <Style x:Key="TrackTextBlockStyle" BasedOn="{StaticResource ArtistTreeItemStyle}" TargetType="{x:Type TextBlock}">
             <Setter Property="FontSize" Value="13"/>
-            <Setter Property="Margin" Value="0,1,0,1"/>
             <Setter Property="Text">
                 <Setter.Value>
                     <MultiBinding StringFormat="{}{0:#'.'}{1:# }{2}">
@@ -54,6 +53,43 @@
                     </MultiBinding>
                 </Setter.Value>
             </Setter>
+        </Style>
+
+        <Style x:Key="TrackOptionsPanelStyle" TargetType="{x:Type StackPanel}">
+            <Setter Property="Width" Value="0"/>
+            <Setter Property="Margin" Value="5, 0, 5, 0"/>
+            <Setter Property="Orientation" Value="Horizontal"/>
+            <Setter Property="Background" Value="Gold"/>
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorType=Grid, AncestorLevel=1}, Path=IsMouseOver}" Value="True">
+                    <DataTrigger.EnterActions>
+                        <BeginStoryboard>
+                            <Storyboard Storyboard.TargetProperty="Width">
+                                <DoubleAnimationUsingKeyFrames>
+                                    <EasingDoubleKeyFrame KeyTime="0:0:0.2" Value="25">
+                                        <EasingDoubleKeyFrame.EasingFunction>
+                                            <PowerEase Power="3" EasingMode="EaseOut"/>
+                                        </EasingDoubleKeyFrame.EasingFunction>
+                                    </EasingDoubleKeyFrame>
+                                </DoubleAnimationUsingKeyFrames>
+                            </Storyboard>
+                        </BeginStoryboard>
+                    </DataTrigger.EnterActions>
+                    <DataTrigger.ExitActions>
+                        <BeginStoryboard>
+                            <Storyboard Storyboard.TargetProperty="Width">
+                                <DoubleAnimationUsingKeyFrames>
+                                    <EasingDoubleKeyFrame KeyTime="0:0:0.2" Value="0">
+                                        <EasingDoubleKeyFrame.EasingFunction>
+                                            <PowerEase Power="3" EasingMode="EaseOut"/>
+                                        </EasingDoubleKeyFrame.EasingFunction>
+                                    </EasingDoubleKeyFrame>
+                                </DoubleAnimationUsingKeyFrames>
+                            </Storyboard>
+                        </BeginStoryboard>
+                    </DataTrigger.ExitActions>
+                </DataTrigger>
+            </Style.Triggers>
         </Style>
 
     </Page.Resources>
@@ -93,16 +129,18 @@
                             <HierarchicalDataTemplate.ItemTemplate>
 
                                 <DataTemplate>
-                                    <Grid>
+                                    <Grid Height="20" Background="Transparent">
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition/>
-                                            <ColumnDefinition Style="{StaticResource TrackOptionsColumnStyle}"/>
+                                            <ColumnDefinition Width="Auto"/>
                                         </Grid.ColumnDefinitions>
 
-                                        <TextBlock Style="{StaticResource TrackTreeItemStyle}" Grid.Column="0"/>
-                                        <Button HorizontalAlignment="Left" Background="Transparent" Foreground="Transparent" BorderBrush="Transparent" IsHitTestVisible="False" Grid.Column="1">
-                                            <Path Style="{StaticResource LastFmImageStyle}"/>
-                                        </Button>
+                                        <TextBlock Style="{StaticResource TrackTextBlockStyle}" Grid.Column="0"/>
+                                        <StackPanel Grid.Column="1" Style="{StaticResource TrackOptionsPanelStyle}">
+                                            <Button HorizontalAlignment="Left" Background="Transparent" Foreground="Transparent" BorderBrush="Transparent" IsHitTestVisible="False" Grid.Column="1">
+                                                <Path Style="{StaticResource LastFmImageStyle}"/>
+                                            </Button>
+                                        </StackPanel>
                                     </Grid>
                                 </DataTemplate>
 

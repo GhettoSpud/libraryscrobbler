@@ -15,7 +15,7 @@
             <Setter Property="Data" Value="{Binding Data, Source={StaticResource LastFmImage}}" />
             <Setter Property="Fill" Value="#000000"/>
             <Style.Triggers>
-                <DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorType=Grid, AncestorLevel=1}, Path=IsMouseOver}" Value="True">
+                <DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorType=Grid, AncestorLevel=2}, Path=IsMouseOver}" Value="True">
                     <Setter Property="Fill" Value="#ba0000"/>
                 </DataTrigger>
             </Style.Triggers>

@@ -99,7 +99,9 @@
                                             <ColumnDefinition/>
                                         </Grid.ColumnDefinitions>
 
-                                        <Path Style="{StaticResource LastFmImageStyle}" Grid.Column="0"/>
+                                        <Button Background="Transparent" Foreground="Transparent" BorderBrush="Transparent" IsHitTestVisible="False">
+                                            <Path Style="{StaticResource LastFmImageStyle}" Grid.Column="0"/>
+                                        </Button>
                                         <TextBlock Style="{StaticResource TrackTreeItemStyle}" Grid.Column="1"/>
                                     </Grid>
                                 </DataTemplate>

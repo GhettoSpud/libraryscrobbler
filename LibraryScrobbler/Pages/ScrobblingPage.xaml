@@ -96,13 +96,13 @@
                                     <Grid>
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition/>
-                                            <ColumnDefinition/>
+                                            <ColumnDefinition Style="{StaticResource TrackOptionsColumnStyle}"/>
                                         </Grid.ColumnDefinitions>
 
-                                        <Button Background="Transparent" Foreground="Transparent" BorderBrush="Transparent" IsHitTestVisible="False">
-                                            <Path Style="{StaticResource LastFmImageStyle}" Grid.Column="0"/>
+                                        <TextBlock Style="{StaticResource TrackTreeItemStyle}" Grid.Column="0"/>
+                                        <Button HorizontalAlignment="Left" Background="Transparent" Foreground="Transparent" BorderBrush="Transparent" IsHitTestVisible="False" Grid.Column="1">
+                                            <Path Style="{StaticResource LastFmImageStyle}"/>
                                         </Button>
-                                        <TextBlock Style="{StaticResource TrackTreeItemStyle}" Grid.Column="1"/>
                                     </Grid>
                                 </DataTemplate>
 

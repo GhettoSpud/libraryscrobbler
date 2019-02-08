@@ -179,6 +179,14 @@ namespace LibraryScrobbler
                 Debug.WriteLine(e);
                 return null;
             }
+            catch (Exception e)
+            {
+                RefreshMessage = $"ERROR: Encountered a problem when loading data. Please try re-parsing the music library's data.";
+                RefreshMessageColor = new SolidColorBrush(Colors.Red);
+
+                Debug.WriteLine(e);
+                return null;
+            }
 
             RefreshMessage = $"Successfully loaded {artistTable.Rows.Count} Artists {albumTable.Rows.Count} Albums and {trackTable.Rows.Count} Tracks";
             RefreshMessageColor = new SolidColorBrush(Colors.LawnGreen);

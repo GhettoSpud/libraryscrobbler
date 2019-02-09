@@ -14,7 +14,7 @@
             <Frame Source="/Pages/ParsingPage.xaml"/>
         </TabItem>
         <TabItem Header="Settings">
-            <Label>Coming Soon...</Label>
+            <Frame Source="/Pages/SettingsPage.xaml"/>
         </TabItem>
     </TabControl>
 </Window>

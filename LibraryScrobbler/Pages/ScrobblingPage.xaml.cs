@@ -1,4 +1,5 @@
-﻿using System;
+﻿using LibraryScrobbler.Lib;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -120,14 +121,14 @@ namespace LibraryScrobbler
             
             if (context.Row.Table == Artists.Table)
             {
-
             }
             else if (context.Row.Table == Albums.Table)
             {
-
+                LibraryScrobbling.ScrobbleAlbum(context.Row.Table);
             }
             else if (context.Row.Table == Tracks.Table)
             {
+                LibraryScrobbling.ScrobbleTrack(context.Row.Table);
 
             }
         }

@@ -82,5 +82,53 @@ namespace LibraryScrobbler.Properties {
                 this["OverwriteExistingMetadataFiles"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string LastFmApiKey {
+            get {
+                return ((string)(this["LastFmApiKey"]));
+            }
+            set {
+                this["LastFmApiKey"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string LastFmUsername {
+            get {
+                return ((string)(this["LastFmUsername"]));
+            }
+            set {
+                this["LastFmUsername"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string LastFmPassword {
+            get {
+                return ((string)(this["LastFmPassword"]));
+            }
+            set {
+                this["LastFmPassword"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string LastFmApiSecret {
+            get {
+                return ((string)(this["LastFmApiSecret"]));
+            }
+            set {
+                this["LastFmApiSecret"] = value;
+            }
+        }
     }
 }

@@ -63,8 +63,6 @@
     <Compile Include="LibraryParsing.cs" />
     <Compile Include="LibraryScrobbling.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="DataSets.cs" />
-    <Compile Include="UniversalTags.cs" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json">

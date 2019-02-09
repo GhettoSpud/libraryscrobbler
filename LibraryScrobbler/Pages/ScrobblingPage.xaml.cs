@@ -26,13 +26,26 @@ namespace LibraryScrobbler
 
         private Dictionary<TreeViewItem, DataRow> _treeViewItemRowMap = new Dictionary<TreeViewItem, DataRow>();
 
-        private DataView _artists;
+        private DataSet DataSet { get; set; }
+
         public DataView Artists {
-            get { return _artists; }
-            private set
+            get
             {
-                _artists = value;
-                RaisePropertyChanged("Artists");
+                return DataSet?.Tables["Artist"]?.AsDataView();;
+            }
+        }
+
+        public DataView Albums {
+            get
+            {
+                return DataSet?.Tables["Album"]?.AsDataView();
+            }
+        }
+
+        public DataView Tracks {
+            get
+            {
+                return DataSet?.Tables["Track"]?.AsDataView();
             }
         }
 
@@ -83,24 +96,40 @@ namespace LibraryScrobbler
 
             MetadataRootDirectoryPath = Properties.Settings.Default.OutputRootDirectoryPath;
 
-            var dataSet = BuildDataSet(MetadataRootDirectoryPath);
-
-            Artists = dataSet?.Tables["Artist"]?.DefaultView;
+            DataSet = BuildDataSet(MetadataRootDirectoryPath);
 
             DataContext = this;
         }
 
-        private void MetadataRootDirectoryRefreshButtonClicked(object sender, RoutedEventArgs args)
+        private void MetadataRootDirectoryRefreshButton_Click(object sender, RoutedEventArgs args)
         {
             var dataSet = BuildDataSet(MetadataRootDirectoryPath);
 
             if (dataSet == null)
                 return;
 
-            Artists = dataSet.Tables["Artist"].DefaultView;
+            DataSet = dataSet;
 
             Properties.Settings.Default.OutputRootDirectoryPath = MetadataRootDirectoryPath;
             Properties.Settings.Default.Save();
+        }
+
+        private void TrackScrobbleButton_Click(object sender, RoutedEventArgs e)
+        {
+            var context = (e.Source as FrameworkElement).DataContext as DataRowView;
+            
+            if (context.Row.Table == Artists.Table)
+            {
+
+            }
+            else if (context.Row.Table == Albums.Table)
+            {
+
+            }
+            else if (context.Row.Table == Tracks.Table)
+            {
+
+            }
         }
 
         private DataSet BuildDataSet(string metadataRootDirectoryPath)
@@ -190,6 +219,8 @@ namespace LibraryScrobbler
 
             RefreshMessage = $"Successfully loaded {artistTable.Rows.Count} Artists {albumTable.Rows.Count} Albums and {trackTable.Rows.Count} Tracks";
             RefreshMessageColor = new SolidColorBrush(Colors.LawnGreen);
+
+
 
             return dataSet;
         }
